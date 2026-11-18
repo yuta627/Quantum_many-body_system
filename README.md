@@ -4,6 +4,16 @@
 
 *Learning repository for 1D quantum many-body physics: each model is solved with several methods (exact diagonalization, free fermions via Jordan-Wigner, and quantum circuits with Trotterization / VQE), and the results are cross-checked against each other.*
 
+## 模型×手法の対応表
+
+| 模型 | 厳密対角化 | Jordan-Wigner変換 | Trotter分解 | VQE | TEBD |
+|---|:-:|:-:|:-:|:-:|:-:|
+| [01 横磁場イジングモデル](models/01_tfim/) | [✓](models/01_tfim/01_exact_diag.ipynb) | [✓](models/01_tfim/02_jordan_wigner.ipynb) | [✓](models/01_tfim/03_trotter.ipynb) | [✓](models/01_tfim/04_vqe.ipynb) | |
+| [02 キタエフ鎖・XY模型](models/02_kitaev_chain/) | | | | | |
+| [03 横磁場イジング＋縦磁場](models/03_tfim_longitudinal/) | | [✗](models/03_tfim_longitudinal/README.md#jordan-wigner変換が使えない理由) | | | |
+
+✓：実装済み（リンク先はその手法を模型に適用したノートブック）　✗：原理的に使えない（リンク先に理由）　空欄：未実装
+
 ## 構成の考え方
 
 - **`methods/`：手法の一般論**。模型によらない部分だけを書く。
