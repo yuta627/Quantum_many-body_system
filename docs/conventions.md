@@ -16,10 +16,11 @@
 
 ## Jordan-Wigner 変換
 
-- $\ket{+}$ をフェルミオンなし、$\ket{-}$ をフェルミオンありとする（$X_j = 1 - 2c_j^\dagger c_j$）。
-- $c_j = \left(\prod_{k<j} X_k\right) a_j$、$a_j = \ket{+}\bra{-}_j = (Z_j - iY_j)/2$。
-- このとき $\ket{+\cdots+}$ はフェルミオンの真空。
-- Nambu 表示 $\Psi = (c_1,\dots,c_n,c_1^\dagger,\dots,c_n^\dagger)^T$、$H = \frac12\Psi^\dagger H_{\mathrm{BdG}}\Psi$。
+- 一般論（`methods/02_jordan_wigner`、`qmb.free_fermion`）では $Z$ を粒子数の軸にとる：$\ket{0}$ が空、$\ket{1}$ が占有、$Z_j = 1 - 2c_j^\dagger c_j$。
+  - $a_j = \ket{0}\bra{1}_j = (X_j + iY_j)/2$、$c_j = \left(\prod_{k<j} Z_k\right) a_j$。
+- 模型ごとに、2次形式になるよう軸を選び直してよい。横磁場イジングモデルでは $X$ を粒子数の軸にとる：$\ket{+}$ が空、$\ket{-}$ が占有、$X_j = 1 - 2c_j^\dagger c_j$（このとき $\ket{+\cdots+}$ はフェルミオンの真空）。
+- 2次形式は $H = \sum c^\dagger A c + \frac12(c^\dagger B c^\dagger + \mathrm{h.c.}) + \mathrm{const}$（$A$ はエルミート、$B$ は反対称）と書く。
+- Nambu 表示 $\Psi = (c_1,\dots,c_n,c_1^\dagger,\dots,c_n^\dagger)^T$、$H = \frac12\Psi^\dagger H_{\mathrm{BdG}}\Psi + \frac12\mathrm{tr}A + \mathrm{const}$、$H_{\mathrm{BdG}} = \begin{pmatrix} A & B \\ -B^* & -A^* \end{pmatrix}$。
 
 ## 量子回路のゲート
 
@@ -29,16 +30,18 @@
 
 ## ノートブックの書き方
 
-**`methods/`（手法の解説）** は次の型にそろえる。
+**`methods/`（手法の一般論）**：模型によらない部分だけを書き、具体例は入れない。
 
-1. 一般論
-2. 具体例（横磁場イジングモデルの $n=2$ の手計算）
+**`models/<模型>/01〜04`（解き方）**：`methods/` と同じ番号で、その手法をこの模型に適用する。
+
+1. この模型に特有の部分（どう変換・分解するか、行列や回路の具体形、その模型での特徴）
+2. $n=2$ の手計算
 3. コードで確かめる（一般の $n$ で書いたコードに $n=2$ を代入し、手計算と一致するか確認）
 
-**`models/`（物理の問い）** は次の型にそろえる。
+**`models/<模型>/11〜`（物理の問い）**：
 
-1. 何を調べるか（手法の説明は `methods/` へのリンクで済ませる）
+1. 何を調べるか（手法の説明は解き方のノートブックへのリンクで済ませる）
 2. 複数の手法による計算と比較（大きい $n$ を含む）
 3. 物理的な考察とまとめ
 
-どちらも、関数はノートブックの中で定義せず `src/qmb/` から import する。
+どれも、関数はノートブックの中で定義せず `src/qmb/` から import する。`src/qmb/` も同じ考え方で、模型によらない計算は手法ごとのモジュール（`ed.py`, `free_fermion.py` など）、模型ごとの定義は `models.py` に置く。

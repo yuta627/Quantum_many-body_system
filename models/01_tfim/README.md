@@ -15,15 +15,29 @@ $$H = -J\sum_i Z_iZ_{i+1} - h\sum_i X_i$$
 
 ## ノートブック
 
+**模型の定義**
+
 | ノートブック | 内容 |
 |---|---|
 | [00_model.ipynb](00_model.ipynb) | 今回扱う模型の定義、前提、対称性 |
-| [01_ground_state.ipynb](01_ground_state.ipynb) | 基底エネルギー $E_0$ を厳密対角化・Jordan-Wigner変換・VQE で比較、熱力学極限 |
-| [02_quench_dynamics.ipynb](02_quench_dynamics.ipynb) | クエンチ後の横磁化 $m_x(t)$ を厳密対角化・Jordan-Wigner変換・Trotter分解で比較 |
-| [03_phase_transition.ipynb](03_phase_transition.ipynb) | ギャップ、秩序変数、相転移点 $h_c=J$（準備中） |
-| [04_entanglement.ipynb](04_entanglement.ipynb) | もつれエントロピー、面積則（準備中） |
 
-各手法の一般論と $n=2$ の手計算は [methods/](../../methods/) を参照。
+**解き方**（各手法をこの模型に適用したもの。手法の一般論は [methods/](../../methods/) の同じ番号のノートブック）
+
+| ノートブック | 内容 |
+|---|---|
+| [01_exact_diag.ipynb](01_exact_diag.ipynb) | 厳密対角化：=2$ の行列と手計算 |
+| [02_jordan_wigner.ipynb](02_jordan_wigner.ipynb) | Jordan-Wigner変換：行列 , B$ の導出、境界条件、=2$ の手計算 |
+| [03_trotter.ipynb](03_trotter.ipynb) | Trotter分解：ハミルトニアンの分け方と回路、誤差の特徴、=2$ の手計算 |
+| [04_vqe.ipynb](04_vqe.ipynb) | VQE：アンザッツ（HVA）、測定、=2$ の手計算 |
+
+**物理の問い**（複数の手法の比較）
+
+| ノートブック | 内容 |
+|---|---|
+| [11_ground_state.ipynb](11_ground_state.ipynb) | 基底エネルギー $ を厳密対角化・Jordan-Wigner変換・VQE で比較、熱力学極限 |
+| [12_quench_dynamics.ipynb](12_quench_dynamics.ipynb) | クエンチ後の横磁化 (t)$ を厳密対角化・Jordan-Wigner変換・Trotter分解で比較 |
+| [13_phase_transition.ipynb](13_phase_transition.ipynb) | ギャップ、秩序変数、相転移点 =J$（準備中） |
+| [14_entanglement.ipynb](14_entanglement.ipynb) | もつれエントロピー、面積則（準備中） |
 
 ## 手法の比較
 

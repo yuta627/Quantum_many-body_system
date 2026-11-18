@@ -6,14 +6,17 @@
 
 ## 構成の考え方
 
-- **`methods/`：手法の解説**。一般論と、横磁場イジングモデルの $n=2$ の手計算・コードによる確認。手法の説明はここに1回だけ書く。
-- **`models/`：模型ごとの「物理の問い」**。1つの問い（基底エネルギー、クエンチ後の時間発展など）につき1つのノートブックで、複数の手法を比較する。
+- **`methods/`：手法の一般論**。模型によらない部分だけを書く。
+- **`models/<模型>/`：模型ごとの内容**。
+  - `00_model`：模型の定義
+  - `01`〜`04`（**解き方**）：各手法をその模型に適用したもの（`methods/` と同じ番号）。模型ごとの導出と $n=2$ の手計算、コードによる確認。
+  - `11`〜（**物理の問い**）：1つの問い（基底エネルギー、クエンチ後の時間発展など）につき1つのノートブックで、複数の手法を比較する。
 
 ## 手法
 
 | # | ノートブック | 内容 | 状態 |
 |---|---|---|---|
-| 01 | [厳密対角化](methods/01_exact_diag.ipynb) | $2^n\times2^n$ 行列の対角化 | 完成 |
+| 01 | [厳密対角化](methods/01_exact_diag.ipynb) | 行列表示、対角化と時間発展、計算コスト | 完成 |
 | 02 | [Jordan-Wigner変換](methods/02_jordan_wigner.ipynb) | 自由フェルミオンへの帰着、BdG 行列 | 完成 |
 | 03 | [Trotter分解](methods/03_trotter.ipynb) | 量子回路による時間発展 | 完成 |
 | 04 | [VQE](methods/04_vqe.ipynb) | 量子回路による基底状態の変分計算 | 完成 |
@@ -30,20 +33,25 @@
 ## フォルダ構成
 
 ```
-├── methods/        手法の解説（一般論 + n=2 の手計算と確認）
-├── models/         模型ごとの物理の問い（複数の手法の比較）
+├── methods/        手法の一般論（模型によらない）
+│   ├── 01_exact_diag  02_jordan_wigner  03_trotter  04_vqe  05_tebd
+├── models/         模型ごとの内容
 │   └── 01_tfim/
-│       ├── README.md               TFIM の一般的な説明
-│       ├── 00_model.ipynb          今回扱う模型の定義
-│       ├── 01_ground_state.ipynb   E0
-│       ├── 02_quench_dynamics.ipynb  m_x(t)
-│       ├── 03_phase_transition.ipynb
-│       └── 04_entanglement.ipynb
+│       ├── README.md                 TFIM の一般的な説明
+│       ├── 00_model.ipynb            今回扱う模型の定義
+│       ├── 01_exact_diag.ipynb       ┐
+│       ├── 02_jordan_wigner.ipynb    │ 解き方（methods/ と同じ番号）
+│       ├── 03_trotter.ipynb          │
+│       ├── 04_vqe.ipynb              ┘
+│       ├── 11_ground_state.ipynb     ┐
+│       ├── 12_quench_dynamics.ipynb  │ 物理の問い
+│       ├── 13_phase_transition.ipynb │
+│       └── 14_entanglement.ipynb     ┘
 ├── src/qmb/        共通パッケージ（ノートブックから import して使う）
 │   ├── operators.py      Pauli 演算子、site_op
-│   ├── models.py         ハミルトニアン・観測量の行列表示
+│   ├── models.py         模型ごとの定義（行列表示、JW 変換後の A, B など）
 │   ├── ed.py             厳密対角化、時間発展
-│   ├── free_fermion.py   Jordan-Wigner 変換による解（BdG 行列）
+│   ├── free_fermion.py   自由フェルミオン（BdG 行列）の一般的な計算
 │   ├── circuits.py       量子回路（Trotter 分解・VQE）
 │   └── observables.py    ギャップ、相関関数、もつれエントロピー
 ├── tests/          手法どうしの一致を確かめるテスト（pytest）
@@ -63,7 +71,7 @@ python -m pytest                    # テストを実行
 
 ```python
 from qmb.models import tfim_hamiltonian
-from qmb.free_fermion import ground_energy
+from qmb.free_fermion import ground_energy, bdg_matrix
 ```
 
 ## ロードマップ

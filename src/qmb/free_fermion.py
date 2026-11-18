@@ -1,40 +1,46 @@
-"""Jordan-Wigner 変換による自由フェルミオン解（TFIM、開放境界条件）。
+"""自由フェルミオン（フェルミオンの2次形式）の一般的な扱い。模型によらない。
 
-規約: |+> = フェルミオンなし、|-> = フェルミオンあり（X_j = 1 - 2 c_j† c_j）。
+ハミルトニアンを
+    H = Σ_ij c_i† A_ij c_j + (1/2) Σ_ij (c_i† B_ij c_j† + h.c.) + const
+（A はエルミート行列、B は反対称行列）と書き、Nambu 表示 Ψ = (c_1..c_n, c_1†..c_n†)^T で
+    H = (1/2) Ψ† H_BdG Ψ + (1/2) tr A + const,   H_BdG = [[A, B], [-B*, -A*]]
+とする。模型ごとの A, B は qmb.models などで作る。
 """
 import numpy as np
 
 
-def tfim_bdg_matrix(n, J, h):
-    """BdG 行列 H_BdG = [[A, B], [-B, -A]]（H = (1/2) Ψ† H_BdG Ψ）。"""
-    A = np.zeros((n, n))
-    B = np.zeros((n, n))
-    for j in range(n):
-        A[j, j] = 2 * h
-    for j in range(n - 1):
-        A[j, j + 1] = A[j + 1, j] = -J
-        B[j, j + 1] = -J
-        B[j + 1, j] = J
-    return np.block([[A, B], [-B, -A]])
+def bdg_matrix(A, B):
+    """BdG 行列 H_BdG = [[A, B], [-B*, -A*]] を返す。"""
+    A = np.asarray(A)
+    B = np.asarray(B)
+    return np.block([[A, B], [-B.conj(), -A.conj()]])
 
 
-def quasiparticle_energies(n, J, h):
-    """1粒子エネルギー ε_k ≥ 0（H_BdG の正の固有値）。"""
-    e = np.linalg.eigvalsh(tfim_bdg_matrix(n, J, h))
-    return e[n:]
+def quasiparticle_energies(H_bdg):
+    """1粒子エネルギー ε_k ≥ 0（H_BdG の固有値は ±ε_k の対なので、大きい方の半分）。"""
+    n = H_bdg.shape[0] // 2
+    return np.linalg.eigvalsh(H_bdg)[n:]
 
 
-def ground_energy(n, J, h):
-    """E0 = -(1/2) Σ ε_k"""
-    return -0.5 * np.sum(quasiparticle_energies(n, J, h))
+def ground_energy(A, B, const=0.0):
+    """基底エネルギー E0 = -(1/2) Σ ε_k + (1/2) tr A + const。"""
+    eps = quasiparticle_energies(bdg_matrix(A, B))
+    return -0.5 * np.sum(eps) + 0.5 * np.real(np.trace(A)) + const
 
 
-def mx_quench(n, J, h, ts):
-    """|+...+> からのクエンチ後の m_x(t) = 1 - (2/n) Σ |U12(t)|^2。"""
-    w, W = np.linalg.eigh(tfim_bdg_matrix(n, J, h))
-    out = []
-    for t in ts:
-        U = (W * np.exp(-1j * w * t)) @ W.conj().T
-        U12 = U[:n, n:]
-        out.append(1 - 2 / n * np.sum(np.abs(U12) ** 2))
-    return np.array(out)
+def nambu_propagator(H_bdg, ts):
+    """Heisenberg 描像の時間発展 Ψ(t) = U(t) Ψ、U(t) = e^{-i H_BdG t} を各時刻で返す。"""
+    w, W = np.linalg.eigh(H_bdg)
+    return np.array([(W * np.exp(-1j * w * t)) @ W.conj().T for t in ts])
+
+
+def vacuum_occupations(H_bdg, ts):
+    """フェルミオンの真空 |0> から時間発展したときの各サイトの粒子数 <n_j(t)>。
+
+    c_j(t) = Σ_k [(U11)_jk c_k + (U12)_jk c_k†] より <0|n_j(t)|0> = Σ_k |(U12)_jk|^2。
+    戻り値の形は (len(ts), n)。
+    """
+    n = H_bdg.shape[0] // 2
+    U = nambu_propagator(H_bdg, ts)
+    U12 = U[:, :n, n:]
+    return np.sum(np.abs(U12) ** 2, axis=2)
