@@ -1,0 +1,25 @@
+[project]
+name = "qmb"
+version = "0.1.0"
+description = "1次元量子多体系シミュレーションの学習用コード（厳密対角化・自由フェルミオン・量子回路）"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "qiskit>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "jupyter", "ipykernel"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
