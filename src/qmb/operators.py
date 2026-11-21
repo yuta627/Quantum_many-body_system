@@ -25,3 +25,11 @@ def site_op(op, i, n):
 def plus_state(n):
     """|+ + ... +> （全成分が 1/sqrt(2^n)）"""
     return np.ones(2**n, dtype=complex) / np.sqrt(2**n)
+
+
+def neel_state(n):
+    """Néel 状態 |0101...>（偶数サイトが |0>（Z=+1）、奇数サイトが |1>（Z=-1））。"""
+    psi = np.zeros(2**n, dtype=complex)
+    idx = int("".join("1" if j % 2 else "0" for j in range(n)), 2)
+    psi[idx] = 1.0
+    return psi

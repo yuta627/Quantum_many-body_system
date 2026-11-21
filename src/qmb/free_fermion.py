@@ -44,3 +44,19 @@ def vacuum_occupations(H_bdg, ts):
     U = nambu_propagator(H_bdg, ts)
     U12 = U[:, :n, n:]
     return np.sum(np.abs(U12) ** 2, axis=2)
+
+
+def number_conserving_occupations(A, n0, ts):
+    """粒子数を保存する2次形式（B = 0）で、Fock 状態から時間発展したときの <n_j(t)>。
+
+    H = Σ c† A c（+ 定数）なら c_j(t) = Σ_k U_jk c_k、U(t) = e^{-iAt} なので、初期状態が
+    各サイトの粒子数が決まった状態（n0[k] = 0 または 1）なら <n_j(t)> = Σ_k |U_jk(t)|^2 n0[k]。
+    戻り値の形は (len(ts), n)。
+    """
+    w, W = np.linalg.eigh(np.asarray(A))
+    n0 = np.asarray(n0, dtype=float)
+    out = []
+    for t in ts:
+        U = (W * np.exp(-1j * w * t)) @ W.conj().T
+        out.append(np.abs(U) ** 2 @ n0)
+    return np.array(out)

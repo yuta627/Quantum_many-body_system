@@ -1,18 +1,19 @@
 # Quantum_many-body_system
 
-1次元量子多体系を、**厳密対角化・自由フェルミオン（Jordan-Wigner変換）・量子回路（Trotter分解 / VQE）** などの複数の手法で解き、互いに比較しながら学ぶリポジトリです。
+1次元量子多体系を、**厳密対角化・自由フェルミオン（Jordan-Wigner変換）・Bethe仮説・量子回路（Trotter分解 / VQE）** などの複数の手法で解き、互いに比較しながら学ぶリポジトリです。
 
 *Learning repository for 1D quantum many-body physics: each model is solved with several methods (exact diagonalization, free fermions via Jordan-Wigner, and quantum circuits with Trotterization / VQE), and the results are cross-checked against each other.*
 
 ## 模型×手法の対応表
 
-| 模型 | 厳密対角化 | Jordan-Wigner変換 | Trotter分解 | VQE | TEBD |
-|---|:-:|:-:|:-:|:-:|:-:|
-| [01 横磁場イジングモデル](models/01_tfim/) | [✓](models/01_tfim/01_exact_diag.ipynb) | [✓](models/01_tfim/02_jordan_wigner.ipynb) | [✓](models/01_tfim/03_trotter.ipynb) | [✓](models/01_tfim/04_vqe.ipynb) | |
-| [02 キタエフ鎖・XY模型](models/02_kitaev_chain/) | | | | | |
-| [03 横磁場イジング＋縦磁場](models/03_tfim_longitudinal/) | | [✗](models/03_tfim_longitudinal/README.md#jordan-wigner変換が使えない理由) | | | |
+| 模型 | 厳密対角化 | Jordan-Wigner変換 | Bethe仮説 | Trotter分解 | VQE | TEBD |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| [01 横磁場イジングモデル](models/01_tfim/) | [✓](models/01_tfim/01_exact_diag.ipynb) | [✓](models/01_tfim/02_jordan_wigner.ipynb) | | [✓](models/01_tfim/03_trotter.ipynb) | [✓](models/01_tfim/04_vqe.ipynb) | |
+| [02 XXZ模型](models/02_xxz/) | [✓](models/02_xxz/01_exact_diag.ipynb) | [△](models/02_xxz/02_jordan_wigner.ipynb)（$\Delta=0$のみ） | [✓](models/02_xxz/02_jordan_wigner.ipynb) | [✓](models/02_xxz/03_trotter.ipynb) | [✓](models/02_xxz/04_vqe.ipynb) | |
+| [02 キタエフ鎖・XY模型](models/02_kitaev_chain/) | | | | | | |
+| [03 横磁場イジング＋縦磁場](models/03_tfim_longitudinal/) | | [✗](models/03_tfim_longitudinal/README.md#jordan-wigner変換が使えない理由) | | | | |
 
-✓：実装済み（リンク先はその手法を模型に適用したノートブック）　✗：原理的に使えない（リンク先に理由）　空欄：未実装
+✓：実装済み（リンク先はその手法を模型に適用したノートブック）　△：一部のパラメータでのみ使える　✗：原理的に使えない（リンク先に理由）　空欄：未実装
 
 ## 構成の考え方
 
@@ -31,20 +32,22 @@
 | 03 | [Trotter分解](methods/03_trotter.ipynb) | 量子回路による時間発展 | 完成 |
 | 04 | [VQE](methods/04_vqe.ipynb) | 量子回路による基底状態の変分計算 | 完成 |
 | 05 | [TEBD](methods/05_tebd.ipynb) | 行列積状態による時間発展 | 準備中 |
+| 06 | [Bethe仮説](methods/06_bethe_ansatz.ipynb) | 可積分系の厳密解、Bethe方程式、熱力学極限 | 完成 |
 
 ## 模型
 
 | # | 模型 | 状態 |
 |---|---|---|
 | 01 | [横磁場イジングモデル](models/01_tfim/) | 基底エネルギー・クエンチ完成、相転移・もつれは準備中 |
-| 02 | [キタエフ鎖・XY模型](models/02_kitaev_chain/) | 予定 |
+| 02 | [XXZ模型](models/02_xxz/) | 基底エネルギー・スタッガード磁化のクエンチ完成 |
+| 02 | [キタエフ鎖・XY模型](models/02_kitaev_chain/) | 予定（番号は今後整理） |
 | 03 | [横磁場イジング＋縦磁場](models/03_tfim_longitudinal/) | 予定 |
 
 ## フォルダ構成
 
 ```
 ├── methods/        手法の一般論（模型によらない）
-│   ├── 01_exact_diag  02_jordan_wigner  03_trotter  04_vqe  05_tebd
+│   ├── 01_exact_diag  02_jordan_wigner  03_trotter  04_vqe  05_tebd  06_bethe_ansatz
 ├── models/         模型ごとの内容
 │   └── 01_tfim/
 │       ├── README.md                 TFIM の一般的な説明
@@ -57,11 +60,13 @@
 │       ├── 12_quench_dynamics.ipynb  │ 物理の問い
 │       ├── 13_phase_transition.ipynb │
 │       └── 14_entanglement.ipynb     ┘
+│   └── 02_xxz/                      XXZ模型（00〜04, 11, 12）
 ├── src/qmb/        共通パッケージ（ノートブックから import して使う）
 │   ├── operators.py      Pauli 演算子、site_op
 │   ├── models.py         模型ごとの定義（行列表示、JW 変換後の A, B など）
-│   ├── ed.py             厳密対角化、時間発展
+│   ├── ed.py             厳密対角化、時間発展、保存量によるブロック対角化
 │   ├── free_fermion.py   自由フェルミオン（BdG 行列）の一般的な計算
+│   ├── bethe.py          Bethe 方程式（対数形）の数値解法
 │   ├── circuits.py       量子回路（Trotter 分解・VQE）
 │   └── observables.py    ギャップ、相関関数、もつれエントロピー
 ├── tests/          手法どうしの一致を確かめるテスト（pytest）
@@ -90,6 +95,6 @@ from qmb.free_fermion import ground_energy, bdg_matrix
 2. TFIM の量子相転移（ギャップ、もつれエントロピー、有限サイズスケーリング）
 3. XY模型・キタエフ鎖（マヨラナ端状態）
 4. TFIM＋縦磁場（非可積分系、熱平衡化）
-5. XXZ / ハイゼンベルク模型とテンソルネットワーク（MPS, TEBD）
+5. XXZ / ハイゼンベルク模型（Bethe仮説・クエンチは完成）とテンソルネットワーク（MPS, TEBD）
 6. 1次元ハバード模型（フェルミオン→量子ビット変換と VQE）
 7. ノイズとエラー緩和
